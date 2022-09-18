@@ -1,6 +1,7 @@
 import sqlite3 from "sqlite3";
 import mkdirp from "mkdirp";
-import crypto from "crypto";
+import { randomBytes, hash } from "./crypt.js";
+import { userSchema } from "./schema/index.js";
 
 /**
  * SQLite communication interface
@@ -11,18 +12,8 @@ mkdirp.sync("./var/db");
 var db = new sqlite3.Database("./var/db/todos.db");
 
 db.serialize(function () {
-	// create the database schema for the todos app
-	db.run(
-		"CREATE TABLE IF NOT EXISTS users ( \
-	    id INTEGER PRIMARY KEY, \
-	    username TEXT UNIQUE, \
-	    hashed_password BLOB, \
-	    salt BLOB, \
-	    name TEXT, \
-	    email TEXT UNIQUE, \
-	    email_verified INTEGER \
-  )"
-	);
+	// Create the database schema
+	db.run(userSchema);
 
 	db.run(
 		"CREATE TABLE IF NOT EXISTS federated_credentials ( \
@@ -44,10 +35,10 @@ db.serialize(function () {
 	);
 
 	// create an initial user (username: alice, password: letmein)
-	var salt = crypto.randomBytes(16);
+	var salt = randomBytes();
 	db.run(
 		"INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
-		["alice", crypto.pbkdf2Sync("letmein", salt, 310000, 32, "sha256"), salt]
+		["alice", hash("letmein", salt), salt]
 	);
 });
 
