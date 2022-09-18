@@ -3,6 +3,7 @@ import passport from "passport";
 import LocalStrategy from "passport-local";
 import crypto from "crypto";
 import db from "../db.js";
+import crypt from "../crypt.js";
 
 /**
  * Authentication routes
@@ -21,22 +22,15 @@ passport.use(
 					return cb(null, false, {
 						message: "Incorrect username or password.",
 					});
-
-				crypto.pbkdf2(
-					password,
-					row.salt,
-					310000,
-					32,
-					"sha256",
-					function (err, hashedPassword) {
-						if (err) return cb(err);
-						if (!crypto.timingSafeEqual(row.hashed_password, hashedPassword))
-							return cb(null, false, {
-								message: "Incorrect username or password.",
-							});
-						return cb(null, row);
-					}
-				);
+				crypt
+					.compare(password, row.hashed_password, row.salt)
+					.then(() => {
+						cb(null, row);
+					})
+					.catch((err) => {
+						if (typeof err === "string") cb(null, false, err);
+						else cb(err);
+					});
 			}
 		);
 	})
