@@ -1,6 +1,6 @@
 # namana-service
 
-This is the namanagasy project.<br />
+This is the backend service of namanagasycar
 
 First, run the development server:
 
