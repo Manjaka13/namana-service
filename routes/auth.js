@@ -1,30 +1,44 @@
-const express = require("express");
-const router = express.Router();
-var passport = require("passport");
-var LocalStrategy = require("passport-local");
-var crypto = require("crypto");
-var db = require("../db");
+import { Router } from "express";
+import passport from "passport";
+import LocalStrategy from "passport-local";
+import crypto from "crypto";
+import db from "../db.js";
+
+/**
+ * Authentication routes
+ */
+
+const router = Router();
 
 passport.use(
 	new LocalStrategy(function verify(username, password, cb) {
-		db.get("SELECT * FROM users WHERE username = ?", [username], function (err, row) {
-			if (err) {
-				return cb(err);
-			}
-			if (!row) {
-				return cb(null, false, { message: "Incorrect username or password." });
-			}
+		db.get(
+			"SELECT * FROM users WHERE username = ?",
+			[username],
+			function (err, row) {
+				if (err) return cb(err);
+				if (!row)
+					return cb(null, false, {
+						message: "Incorrect username or password.",
+					});
 
-			crypto.pbkdf2(password, row.salt, 310000, 32, "sha256", function (err, hashedPassword) {
-				if (err) {
-					return cb(err);
-				}
-				if (!crypto.timingSafeEqual(row.hashed_password, hashedPassword)) {
-					return cb(null, false, { message: "Incorrect username or password." });
-				}
-				return cb(null, row);
-			});
-		});
+				crypto.pbkdf2(
+					password,
+					row.salt,
+					310000,
+					32,
+					"sha256",
+					function (err, hashedPassword) {
+						if (err) return cb(err);
+						if (!crypto.timingSafeEqual(row.hashed_password, hashedPassword))
+							return cb(null, false, {
+								message: "Incorrect username or password.",
+							});
+						return cb(null, row);
+					}
+				);
+			}
+		);
 	})
 );
 
@@ -67,30 +81,37 @@ router.get("/signup", function (req, res, next) {
 
 router.post("/signup", function (req, res, next) {
 	var salt = crypto.randomBytes(16);
-	crypto.pbkdf2(req.body.password, salt, 310000, 32, "sha256", function (err, hashedPassword) {
-		if (err) {
-			return next(err);
-		}
-		db.run(
-			"INSERT INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
-			[req.body.username, hashedPassword, salt],
-			function (err) {
-				if (err) {
-					return next(err);
-				}
-				var user = {
-					id: this.lastID,
-					username: req.body.username,
-				};
-				req.login(user, function (err) {
+	crypto.pbkdf2(
+		req.body.password,
+		salt,
+		310000,
+		32,
+		"sha256",
+		function (err, hashedPassword) {
+			if (err) {
+				return next(err);
+			}
+			db.run(
+				"INSERT INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
+				[req.body.username, hashedPassword, salt],
+				function (err) {
 					if (err) {
 						return next(err);
 					}
-					res.redirect("/");
-				});
-			}
-		);
-	});
+					var user = {
+						id: this.lastID,
+						username: req.body.username,
+					};
+					req.login(user, function (err) {
+						if (err) {
+							return next(err);
+						}
+						res.redirect("/");
+					});
+				}
+			);
+		}
+	);
 });
 
-module.exports = router;
+export default router;

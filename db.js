@@ -1,6 +1,10 @@
-var sqlite3 = require("sqlite3");
-var mkdirp = require("mkdirp");
-var crypto = require("crypto");
+import sqlite3 from "sqlite3";
+import mkdirp from "mkdirp";
+import crypto from "crypto";
+
+/**
+ * SQLite communication interface
+ */
 
 mkdirp.sync("./var/db");
 
@@ -41,11 +45,10 @@ db.serialize(function () {
 
 	// create an initial user (username: alice, password: letmein)
 	var salt = crypto.randomBytes(16);
-	db.run("INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)", [
-		"alice",
-		crypto.pbkdf2Sync("letmein", salt, 310000, 32, "sha256"),
-		salt,
-	]);
+	db.run(
+		"INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
+		["alice", crypto.pbkdf2Sync("letmein", salt, 310000, 32, "sha256"), salt]
+	);
 });
 
-module.exports = db;
+export default db;

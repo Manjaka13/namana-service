@@ -4,25 +4,10 @@
  * Module dependencies.
  */
 
-const app = require("../app");
-const debug = require("debug")("todos:server");
-const http = require("http");
-
-// Set port from environment
-const port = normalizePort(process.env.PORT || "3001");
-app.set("port", port);
-
-// Setup HTTP server
-const server = http.createServer(app);
-
-// Listen on provided port, on all network interfaces.
-server.listen(port);
-server.on("error", onError);
-server.on("listening", onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
+import app from "./app.js";
+import debug from "debug";
+// const debug = require("debug")("todos:server");
+import http from "http";
 
 /**
  * Normalize a port into a number, string or false
@@ -42,8 +27,7 @@ const normalizePort = (val) => {
  */
 const onError = (error) => {
 	const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
-	if (error.syscall !== "listen")
-		throw error;
+	if (error.syscall !== "listen") throw error;
 	// handle specific listen errors with friendly messages
 	switch (error.code) {
 		case "EACCES":
@@ -67,3 +51,15 @@ const onListening = () => {
 	const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
 	debug("Listening on " + bind);
 };
+
+// Set port from environment
+const port = normalizePort(process.env.PORT || "3001");
+app.set("port", port);
+
+// Setup HTTP server
+const server = http.createServer(app);
+
+// Listen on provided port, on all network interfaces.
+server.listen(port);
+server.on("error", onError);
+server.on("listening", onListening);

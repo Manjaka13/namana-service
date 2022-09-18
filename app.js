@@ -1,21 +1,35 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+import createError from "http-errors";
+import express from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
+import passport from "passport";
+import session from "express-session";
+import ConnectSqlite from "connect-sqlite3";
+import indexRouter from "./routes/index.js";
+import authRouter from "./routes/auth.js";
+import pluralize from "pluralize";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-var passport = require("passport");
-var session = require("express-session");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-var SQLiteStore = require("connect-sqlite3")(session);
+/**
+ * App entry point
+ */
 
-var indexRouter = require("./routes/index");
-var authRouter = require("./routes/auth");
+// Get env vars
+dotenv.config();
 
-var app = express();
+// Connects sqlite to session
+const SQLiteStore = ConnectSqlite(session);
 
-app.locals.pluralize = require("pluralize");
+// Setup express
+const app = express();
+
+app.locals.pluralize = pluralize;
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -59,4 +73,4 @@ app.use(function (err, req, res, next) {
 	res.render("error");
 });
 
-module.exports = app;
+export default app;

@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"description": "Namanagasy backend service.",
+	"type": "module",
 	"keywords": [
 		"namanagasy",
 		"namana",
@@ -15,8 +16,8 @@
 		"url": "https://harij.netlify.app/"
 	},
 	"scripts": {
-		"start": "node ./bin/www",
-		"dev": "nodemon ./bin/www"
+		"start": "node ./index.js",
+		"dev": "nodemon ./index.js"
 	},
 	"dependencies": {
 		"connect-sqlite3": "^0.9.13",
