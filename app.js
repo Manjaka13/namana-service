@@ -12,6 +12,7 @@ import authRouter from "./routes/auth.js";
 import pluralize from "pluralize";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { DATABASE_FOLDER, SESSION_SECRET, SESSION_DATABASE } from "./const.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -44,10 +45,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
 	session({
-		secret: "keyboard cat",
+		secret: SESSION_SECRET,
 		resave: false,
 		saveUninitialized: false,
-		store: new SQLiteStore({ db: "sessions.db", dir: "./var/db" }),
+		store: new SQLiteStore({ db: SESSION_DATABASE, dir: DATABASE_FOLDER }),
 	})
 );
 

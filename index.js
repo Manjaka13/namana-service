@@ -6,7 +6,6 @@
 
 import app from "./app.js";
 import debug from "debug";
-// const debug = require("debug")("todos:server");
 import http from "http";
 
 /**

@@ -2,14 +2,20 @@ import sqlite3 from "sqlite3";
 import mkdirp from "mkdirp";
 import { randomBytes, hash } from "./crypt.js";
 import { userSchema } from "./schema/index.js";
+import {
+	DATABASE_FOLDER,
+	MAIN_DATABASE,
+	MASTER_USER_NAME,
+	MASTER_USER_PASSWORD,
+} from "./const.js";
 
 /**
  * SQLite communication interface
  */
 
-mkdirp.sync("./var/db");
+mkdirp.sync(DATABASE_FOLDER);
 
-var db = new sqlite3.Database("./var/db/todos.db");
+const db = new sqlite3.Database(`${DATABASE_FOLDER}/${MAIN_DATABASE}`);
 
 db.serialize(function () {
 	// Create the database schema
@@ -34,11 +40,11 @@ db.serialize(function () {
   )"
 	);
 
-	// create an initial user (username: alice, password: letmein)
+	// Create master user
 	var salt = randomBytes();
 	db.run(
 		"INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
-		["alice", hash("letmein", salt), salt]
+		[MASTER_USER_NAME, hash(MASTER_USER_PASSWORD, salt), salt]
 	);
 });
 
