@@ -1,0 +1,41 @@
+{
+	"name": "namana-service",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Namanagasy backend service.",
+	"keywords": [
+		"namanagasy",
+		"namana",
+		"backend",
+		"service"
+	],
+	"author": {
+		"name": "Hari",
+		"email": "manjaka.rajaonson@gmail.com",
+		"url": "https://harij.netlify.app/"
+	},
+	"scripts": {
+		"start": "node ./bin/www",
+		"dev": "nodemon ./bin/www"
+	},
+	"dependencies": {
+		"connect-sqlite3": "^0.9.13",
+		"cookie-parser": "~1.4.4",
+		"debug": "~2.6.9",
+		"dotenv": "^8.6.0",
+		"ejs": "~2.6.1",
+		"express": "~4.16.1",
+		"express-session": "^1.17.3",
+		"http-errors": "~1.6.3",
+		"mkdirp": "^1.0.4",
+		"morgan": "~1.9.1",
+		"passport": "^0.6.0",
+		"passport-local": "^1.0.0",
+		"pluralize": "^8.0.0",
+		"sqlite3": "^5.0.2"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.20",
+		"prettier": "^2.7.1"
+	}
+}
